@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ai_life_os/core/theme/app_colors.dart';
-import 'package:ai_life_os/core/utils/dummy_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ai_life_os/core/providers/data_providers.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
   String getGreeting() {
@@ -17,7 +18,14 @@ class HomeHeader extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(userProfileProvider);
+    final userName = profile.when(
+      data: (d) => d['name'] ?? 'User',
+      loading: () => '...',
+      error: (_, __) => 'User',
+    );
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -59,7 +67,7 @@ class HomeHeader extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: DummyData.userName,
+                          text: userName,
                           style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,

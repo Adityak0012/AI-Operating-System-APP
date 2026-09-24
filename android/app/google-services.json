@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66037279464",
+    "project_id": "ai-operating-system-50c4b",
+    "storage_bucket": "ai-operating-system-50c4b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66037279464:android:257bf0188608f528b9775d",
+        "android_client_info": {
+          "package_name": "com.example.ai_life_os"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARIuxdJ_C5T0MabZlZMYrlIxi0dqS8rtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

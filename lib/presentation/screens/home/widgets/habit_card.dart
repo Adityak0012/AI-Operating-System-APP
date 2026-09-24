@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ai_life_os/core/providers/habits_provider.dart';
 import 'package:ai_life_os/core/theme/app_colors.dart';
-import 'package:ai_life_os/core/utils/dummy_data.dart';
 
-class HabitCard extends StatelessWidget {
+class HabitCard extends ConsumerWidget {
   const HabitCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       elevation: 2,
       shadowColor: Colors.black12,
@@ -43,11 +44,11 @@ class HabitCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ...DummyData.habits.asMap().entries.map((entry) {
+            ...ref.watch(habitsProvider).asMap().entries.map((entry) {
               final index = entry.key;
               final item = entry.value;
-              final isLast = index == DummyData.habits.length - 1;
-              final double progress = item['progress'] / 7.0;
+              final isLast = index == ref.watch(habitsProvider).length - 1;
+              final double progress = item.progress / 7.0;
 
               return Column(
                 children: [
@@ -61,7 +62,7 @@ class HabitCard extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                item['name'],
+                                item.name,
                                 style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: Colors.black87),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
@@ -69,7 +70,7 @@ class HabitCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              "${item['progress']}/7 days",
+                              "${item.progress}/7 days",
                               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                             ),
                           ],

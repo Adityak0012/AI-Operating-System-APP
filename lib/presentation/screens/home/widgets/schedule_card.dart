@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ai_life_os/core/providers/schedule_provider.dart';
 import 'package:ai_life_os/core/theme/app_colors.dart';
-import 'package:ai_life_os/core/utils/dummy_data.dart';
 
-class ScheduleCard extends StatelessWidget {
+class ScheduleCard extends ConsumerWidget {
   const ScheduleCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       elevation: 2,
       shadowColor: Colors.black12,
@@ -43,10 +44,10 @@ class ScheduleCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ...DummyData.scheduleItems.asMap().entries.map((entry) {
+            ...ref.watch(scheduleProvider).asMap().entries.map((entry) {
               final index = entry.key;
               final item = entry.value;
-              final isLast = index == DummyData.scheduleItems.length - 1;
+              final isLast = index == ref.watch(scheduleProvider).length - 1;
 
               return Column(
                 children: [
@@ -59,14 +60,14 @@ class ScheduleCard extends StatelessWidget {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: item['color'],
+                            color: Color(item.colorValue),
                             shape: BoxShape.circle,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            item['title'],
+                            item.title,
                             style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: Colors.black87),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -74,7 +75,7 @@ class ScheduleCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          item['time'],
+                          item.time,
                           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
                       ],
