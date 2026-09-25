@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
 import '../layout/scaffold_with_nav_bar.dart';
 import '../screens/ai_assistant/ai_assistant_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/planner/planner_screen.dart';
@@ -27,6 +28,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteConstants.onboarding,
       builder: (context, state) => const OnboardingScreen(),
+    ),
+    GoRoute(
+      path: RouteConstants.calendar,
+      builder: (context, state) => const CalendarScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

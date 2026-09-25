@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/services/hive_service.dart';
+import 'core/models/task_item.dart';
 import 'presentation/routes/app_router.dart';
 
 void main() async {

@@ -5,4 +5,5 @@ class RouteConstants {
   static const String planner = '/planner';
   static const String aiAssistant = '/ai_assistant';
   static const String profile = '/profile';
+  static const String calendar = '/calendar';
 }

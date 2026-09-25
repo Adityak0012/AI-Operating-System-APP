@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ai_life_os/core/providers/tasks_provider.dart';
+import 'package:ai_life_os/core/providers/schedule_provider.dart';
+import 'package:ai_life_os/core/providers/reminders_provider.dart';
+import 'package:ai_life_os/core/providers/habits_provider.dart';
 
-class OverviewStats extends StatelessWidget {
+class OverviewStats extends ConsumerWidget {
   const OverviewStats({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(tasksProvider);
+    final schedules = ref.watch(scheduleProvider);
+    final reminders = ref.watch(remindersProvider);
+    final habits = ref.watch(habitsProvider);
+
+    final completedTasks = tasks.where((t) => t.isCompleted).length;
+    final pendingReminders = reminders.where((r) => !r.isCompleted).length;
+    final activeHabits = habits.length;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -15,18 +29,16 @@ class OverviewStats extends StatelessWidget {
               const Text(
                 "Today's Overview",
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87),
               ),
               Text(
                 "View All >",
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -36,9 +48,9 @@ class OverviewStats extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.task_alt,
-                  number: "12",
+                  number: "${tasks.length}",
                   label: "Tasks",
-                  subtext: "3 Completed",
+                  subtext: "$completedTasks Completed",
                   color: Colors.purple,
                 ),
               ),
@@ -46,9 +58,9 @@ class OverviewStats extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.event,
-                  number: "5",
+                  number: "${schedules.length}",
                   label: "Events",
-                  subtext: "1 Upcoming",
+                  subtext: schedules.isEmpty ? "None today" : "Today",
                   color: Colors.blue,
                 ),
               ),
@@ -60,19 +72,19 @@ class OverviewStats extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.notifications_active_outlined,
-                  number: "3",
+                  number: "${reminders.length}",
                   label: "Reminders",
-                  subtext: "1 Overdue",
+                  subtext: "$pendingReminders Pending",
                   color: Colors.orange,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  icon: Icons.flag_outlined,
-                  number: "4",
-                  label: "Goals",
-                  subtext: "On Track",
+                  icon: Icons.trending_up,
+                  number: "$activeHabits",
+                  label: "Habits",
+                  subtext: "This week",
                   color: Colors.green,
                 ),
               ),
@@ -101,38 +113,27 @@ class OverviewStats extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
+            decoration: const BoxDecoration(
+                color: Colors.white, shape: BoxShape.circle),
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 16),
-          Text(
-            number,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(number,
+              style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87)),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text(
-            subtext,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(subtext,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: color,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ai_life_os/core/theme/app_colors.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
@@ -13,96 +14,179 @@ class ScaffoldWithNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true, // Ensures background is clean behind the notch
+      extendBody: true,
       body: navigationShell,
-      floatingActionButton: Container(
-        height: 68,
-        width: 68,
+      floatingActionButton: _GradientFab(
+        onTap: () => navigationShell.goBranch(
+          2,
+          initialLocation: navigationShell.currentIndex == 2,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: _CurvedNavBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: (index) => navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Gradient FAB ──────────────────────────────────────────────────────────────
+class _GradientFab extends StatelessWidget {
+  final VoidCallback onTap;
+  const _GradientFab({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: const LinearGradient(
-            colors: [AppColors.primary, Color(0xFF9C27B0)],
+            colors: AppColors.gradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              blurRadius: 16,
-              spreadRadius: 2,
-              offset: const Offset(0, 4),
-            )
+              color: AppColors.primary.withValues(alpha: 0.40),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
-        child: FloatingActionButton(
-          shape: const CircleBorder(),
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          highlightElevation: 0,
-          hoverElevation: 0,
-          focusElevation: 0,
-          splashColor: Colors.white24,
-          onPressed: () {
-            navigationShell.goBranch(2, initialLocation: navigationShell.currentIndex == 2);
-          },
-          child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
-        ),
+        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 26),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        color: AppColors.surface,
-        surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withValues(alpha: 0.1),
-        clipBehavior: Clip.antiAlias,
-        elevation: 8,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child: _buildNavItem(context, Icons.home, "Home", 0)),
-              Expanded(child: _buildNavItem(context, Icons.calendar_today_outlined, "Planner", 1)),
-              const SizedBox(width: 72), // Space for FAB
-              Expanded(child: _buildNavItem(context, Icons.smart_toy_outlined, "AI Assistant", 2)),
-              Expanded(child: _buildNavItem(context, Icons.person_outline, "Profile", 3)),
-            ],
+    );
+  }
+}
+
+// ── Curved Nav Bar ────────────────────────────────────────────────────────────
+class _CurvedNavBar extends StatelessWidget {
+  final int currentIndex;
+  final void Function(int) onTap;
+
+  const _CurvedNavBar({required this.currentIndex, required this.onTap});
+
+  static const _items = [
+    _NavItem(Icons.home_rounded, Icons.home_outlined, "Home"),
+    _NavItem(Icons.calendar_month, Icons.calendar_today_outlined, "Planner"),
+    _NavItem(Icons.smart_toy, Icons.smart_toy_outlined, "AI"),
+    _NavItem(Icons.person_rounded, Icons.person_outline, "Profile"),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.10),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        child: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          color: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          child: SizedBox(
+            height: 62,
+            child: Row(
+              children: [
+                // Left two items
+                Expanded(child: _buildItem(0)),
+                Expanded(child: _buildItem(1)),
+                // FAB space
+                const SizedBox(width: 72),
+                // Right two items
+                Expanded(child: _buildItem(2)),
+                Expanded(child: _buildItem(3)),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, int index) {
-    final isActive = navigationShell.currentIndex == index;
-    return InkWell(
-      onTap: () {
-        navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
-        );
-      },
+  Widget _buildItem(int index) {
+    final item = _items[index];
+    final isActive = currentIndex == index;
+
+    return GestureDetector(
+      onTap: () => onTap(index),
+      behavior: HitTestBehavior.opaque,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isActive ? AppColors.primary : Colors.grey,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              color: isActive ? AppColors.primary : Colors.grey,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          // Icon with pill background when active
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? AppColors.primary.withValues(alpha: 0.12)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
             ),
-          )
+            child: Icon(
+              isActive ? item.activeIcon : item.inactiveIcon,
+              color: isActive ? AppColors.primary : AppColors.textSecondary,
+              size: 22,
+            ),
+          ),
+          const SizedBox(height: 3),
+          // Label always visible below
+          Text(
+            item.label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+              color: isActive ? AppColors.primary : AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          // Active dot indicator
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            width: isActive ? 14 : 0,
+            height: 3,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+class _NavItem {
+  final IconData activeIcon;
+  final IconData inactiveIcon;
+  final String label;
+  const _NavItem(this.activeIcon, this.inactiveIcon, this.label);
 }
